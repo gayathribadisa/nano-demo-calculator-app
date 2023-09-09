@@ -1,28 +1,30 @@
 #include "crow_all.h"
+#include <sstream> // Include the necessary header for stringstream
 
-crow::response greet()
-{
-    crow::response res;
-    res.code = 200;
-    res.set_header("Content-Type", "text/plain");
-    res.body = "Hello world!";
-    
-    return res;
-}
+// Handler function for the addition route
 crow::response add(const crow::request &req)
 {
     auto input = crow::json::load(req.body);
-    if (!input || !input.has("first") || !input.has("second")) {
-        return crow::response(400, "Invalid JSON format");
+
+    // Check if the JSON is valid
+    if (!input || !input.has("num1") || !input.has("num2")) {
+        return crow::response(400, "Invalid input");
     }
-    int first = input["first"].i();
-    int second = input["second"].i();
-    
 
-    int result = first + second;
+    // Extract the numbers from the JSON
+    double num1 = input["num1"].d();
+    double num2 = input["num2"].d();
 
+    // Calculate the result
+    double result = num1 + num2;
+
+    // Prepare the response in JSON format
+    crow::json::wvalue response;
+    response["result"] = result;
+
+    // Serialize the JSON object to a string
     std::ostringstream oss;
-    oss << "{\"result\":" << result << "}";
+    crow::json::wstream(oss, response);
 
     // Return the response with status code 200 and JSON content
     crow::response res;
@@ -32,20 +34,31 @@ crow::response add(const crow::request &req)
 
     return res;
 }
+
+// Handler function for the subtraction route
 crow::response subtract(const crow::request &req)
 {
     auto input = crow::json::load(req.body);
-     if (!input || !input.has("first") || !input.has("second")) {
-        return crow::response(400, "Invalid JSON format");
+
+    // Check if the JSON is valid
+    if (!input || !input.has("num1") || !input.has("num2")) {
+        return crow::response(400, "Invalid input");
     }
-    int first = input["first"].i();
-    int second = input["second"].i();
-    
 
-    int result = first - second;
+    // Extract the numbers from the JSON
+    double num1 = input["num1"].d();
+    double num2 = input["num2"].d();
 
+    // Calculate the result
+    double result = num1 - num2;
+
+    // Prepare the response in JSON format
+    crow::json::wvalue response;
+    response["result"] = result;
+
+    // Serialize the JSON object to a string
     std::ostringstream oss;
-    oss << "{\"result\":" << result << "}";
+    crow::json::wstream(oss, response);
 
     // Return the response with status code 200 and JSON content
     crow::response res;
@@ -54,4 +67,19 @@ crow::response subtract(const crow::request &req)
     res.body = oss.str();
 
     return res;
+}
+
+int main()
+{
+    crow::SimpleApp app;
+
+    CROW_ROUTE(app, "/add")
+        .methods("POST"_method)(&add);
+
+    CROW_ROUTE(app, "/subtract")
+        .methods("POST"_method)(&subtract);
+
+    app.port(8080).run();
+
+    return 0;
 }
