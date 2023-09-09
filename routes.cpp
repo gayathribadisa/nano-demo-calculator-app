@@ -5,7 +5,7 @@ crow::response greet(){
         return res;
 }crow::response add(const crow::request &req)
 {    auto input = crow::json::load(req.body);
-    if (!input  !input.has("first")  !input.has("second")) {        return crow::response(400, "Invalid JSON format");
+    if (!input ||  !input.has("first") || !input.has("second")) {        return crow::response(400, "Invalid JSON format");
     }    int first = input["first"].i();
     int second = input["second"].i();    
     int result = first + second;
@@ -16,7 +16,7 @@ crow::response greet(){
     res.body = oss.str();
     return res;}
 crow::response subtract(const crow::request &req){
-    auto input = crow::json::load(req.body);     if (!input  !input.has("first")  !input.has("second")) {
+    auto input = crow::json::load(req.body);     if (!input || !input.has("first") || !input.has("second")) {
         return crow::response(400, "Invalid JSON format");    }
     int first = input["first"].i();    int second = input["second"].i();
     
